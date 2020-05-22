@@ -92,7 +92,11 @@ class frog {
 
   if (is_string($x)) {
    $FROG = $this;
-   require_once($this->include_dir . '/tables/' . $x . '.inc');
+   $f = $this->include_dir . '/tables/' . $x . '.inc';
+   if (! file_exists($f)) {
+    trigger_error('Missing include file: ' . $f,E_USER_ERROR);
+   }
+   require_once($f);
    $x = $this->registry[$base];
   }
 
@@ -537,6 +541,21 @@ class frog_object {
   }
  }
 
+ function strip_parent() {
+  $x = clone($this);
+  unset($x->parent);
+  foreach($x as $k => $v) {
+   if ($x->$k instanceof frog_object) {
+    $x->$k = $x->$k->strip_parent();
+   }
+  }
+  return $x;
+ }
+ 
+ function dump() {
+  var_dump($this->strip_parent());
+ }
+ 
  function fill_from_record($x) {
   if (! is_object($x)) {
    trigger_error('In fill_from_record: not an object',E_USER_ERROR);
