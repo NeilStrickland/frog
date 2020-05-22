@@ -106,14 +106,16 @@ class frog_html {
   return <<<HTML
  <table>
 
-HTML;
+HTML
+;
  }
 
  function table_end() {
   return <<<HTML
  </table>
 
-HTML;
+HTML
+;
  }
 
  //////////////////////////////////////////////////////////////////////
@@ -326,11 +328,14 @@ HTML
  function forced_checkbox($name,$value) {
   $v = $value ? 1 : 0;
   $c = $v ? ' checked="checked"' : '';
+  $n = $this->js_name;
+  
   echo <<<HTML
  <input type="hidden" name="$name" value="$v"/>
- <input type="checkbox" name="{$name}_cb" onclick="{$this->js_name}.force_checkbox()" $c/>
+ <input type="checkbox" name="{$name}_cb" onclick="{$n}.force_checkbox()" {$c}/>
 
-HTML;
+HTML
+ ;
  }
 
  //////////////////////////////////////////////////////////////////////
@@ -405,19 +410,22 @@ HTML;
   $html = <<<HTML
    <select name="$name"{$oc}{$of}{$ob}{$wd}{$dbd}{$style}>
 
-HTML;
+HTML
+;
 
   if ($empty_option) {
    if ($value) {
     $html .= <<<HTML
    <option value="">&nbsp;</option>
 
-HTML;
+HTML
+   ;
    } else {
     $html .= <<<HTML
    <option selected="selected" value="">&nbsp;</option>
 
-HTML;
+HTML
+   ;
 
    }
   }
