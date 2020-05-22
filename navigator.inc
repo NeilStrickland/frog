@@ -21,14 +21,15 @@ class frog_navigator {
   $this->standard_scripts = array();
   $this->standard_body_scripts = array();
   $this->standard_styles = array();
-  $this->dtd = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">";
+  //  $this->dtd = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">";
+  $this->dtd = "<!DOCTYPE HTML>";
    
   $this->available_widgets = array(
    'tabber' => 1,
    'autosuggest' => 1,
    'calendar' => 1,
    'mathjax' => <<<HTML
-<script src="//cdn.mathjax.org/mathjax/latest/MathJax.js"> 
+<script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"> 
   MathJax.Hub.Config({
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
@@ -270,7 +271,7 @@ HTML;
   } else if ($this->styles_colocated &&
 	     ($cf = $this->colocated_file_exists($s . '.css'))) {
    $f = $cf;
-   $u = $s;
+   $u = $s . '.css';
   } else {
    $f = $this->styles_base_dir . '/' . $s . '.css'; 
    $u = $this->styles_base_url . '/' . $s . '.css'; 
