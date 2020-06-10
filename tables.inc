@@ -838,7 +838,8 @@ class frog_object {
   
   if($s === FALSE) {
    trigger_error('Could not update ' . $this->object_type .
-		 ' in database: ' . mysqli_error($this->parent->db),E_USER_ERROR);
+		 ' in database: ' . mysqli_error($this->parent->db) .
+   '<br/><pre>' . $q . '</pre>',E_USER_ERROR);
   }
  }
  
