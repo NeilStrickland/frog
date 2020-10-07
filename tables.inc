@@ -8,16 +8,19 @@ class frog {
  var $include_dir;
  var $config;
  var $cache;
-
+ var $db_name = '';
+ var $db_host = 'localhost';
+ var $db_port = 3306;
+ 
  function __construct() {
   $this->registry = array();
   $this->config = array();
   $this->cache = array();
  }
 
- function connect($db_user,$db_pass,$db_name='',$db_host='localhost',$db_port=3306) {
-  $n = $db_name ? $db_name : $db_user;
-  $this->db = mysqli_connect($db_host,$db_user,$db_pass,$n,$db_port);
+ function connect($db_user,$db_pass) {
+  $n = $this->db_name ? $this->db_name : $db_user;
+  $this->db = mysqli_connect($this->db_host,$db_user,$db_pass,$n,$this->db_port);
 
   if (!$this->db) {
    $msg = 'Could not connect to database: ' . mysqli_connect_error();
@@ -92,7 +95,11 @@ class frog {
 
   if (is_string($x)) {
    $FROG = $this;
-   require_once($this->include_dir . '/tables/' . $x . '.inc');
+   $f = $this->include_dir . '/tables/' . $x . '.inc';
+   if (! file_exists($f)) {
+    trigger_error('Missing include file: ' . $f,E_USER_ERROR);
+   }
+   require_once($f);
    $x = $this->registry[$base];
   }
 
@@ -537,6 +544,21 @@ class frog_object {
   }
  }
 
+ function strip_parent() {
+  $x = clone($this);
+  unset($x->parent);
+  foreach($x as $k => $v) {
+   if ($x->$k instanceof frog_object) {
+    $x->$k = $x->$k->strip_parent();
+   }
+  }
+  return $x;
+ }
+ 
+ function dump() {
+  var_dump($this->strip_parent());
+ }
+ 
  function fill_from_record($x) {
   if (! is_object($x)) {
    trigger_error('In fill_from_record: not an object',E_USER_ERROR);
