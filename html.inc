@@ -118,6 +118,39 @@ HTML
 ;
  }
 
+ function edged_table_start() {
+  return <<<HTML
+ <table class="edged">
+
+HTML
+;
+ }
+
+ function edged_table_end() {
+  return <<<HTML
+ </table>
+
+HTML
+;
+ }
+
+ function tab_start($title) {
+  return <<<HTML
+ <div class="tabbertab">
+  <h2>{$title}</h2>
+
+HTML
+;
+ }
+
+ function tab_end() {
+  return <<<HTML
+ </div>
+
+HTML
+;
+ }
+
  //////////////////////////////////////////////////////////////////////
 
  function lnk($href,$text) {
@@ -275,7 +308,8 @@ HTML
   return <<<HTML
  <img id="{$id}_toggler" alt="toggle" src="$u"
   onclick="{$this->js_name}.toggle_display(this,'$id','$type')"/>
-HTML;
+HTML
+ ;
  }
 
  //////////////////////////////////////////////////////////////////////
@@ -328,11 +362,14 @@ HTML
  function forced_checkbox($name,$value) {
   $v = $value ? 1 : 0;
   $c = $v ? ' checked="checked"' : '';
+  $n = $this->js_name;
+  
   echo <<<HTML
  <input type="hidden" name="$name" value="$v"/>
- <input type="checkbox" name="{$name}_cb" onclick="{$this->js_name}.force_checkbox()" $c/>
+ <input type="checkbox" name="{$name}_cb" onclick="{$n}.force_checkbox()" {$c}/>
 
-HTML;
+HTML
+ ;
  }
 
  //////////////////////////////////////////////////////////////////////
@@ -407,19 +444,22 @@ HTML;
   $html = <<<HTML
    <select name="$name"{$oc}{$of}{$ob}{$wd}{$dbd}{$style}>
 
-HTML;
+HTML
+;
 
   if ($empty_option) {
    if ($value) {
     $html .= <<<HTML
    <option value="">&nbsp;</option>
 
-HTML;
+HTML
+   ;
    } else {
     $html .= <<<HTML
    <option selected="selected" value="">&nbsp;</option>
 
-HTML;
+HTML
+   ;
 
    }
   }
@@ -448,7 +488,8 @@ HTML;
   $html .= <<<HTML
   </select>
 
-HTML;
+HTML
+;
 
   return($html);
  }

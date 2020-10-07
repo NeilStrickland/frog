@@ -183,18 +183,58 @@ function get_safe_optional_parameter($p,$d,$frog) {
 
 //////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////
+
 function latex_to_html($tex_source,$tth_opts = '-r -u') {
  global $cfg;
 
  $n = sprintf("%d%d",rand(),time());
  $f = $cfg->tth_dir . '/' . $n;
- file_put_contents($f,$tex_source);
- $tth_url = 'http://' . $_SERVER['SERVER_NAME'] . '/cgi-bin/tth.pl';
- $url = $tth_url . '?tex_file=' . $n . '&tth_opts=' . 
-  rawurlencode($tth_opts);
- $s = file_get_contents($url);
- // unlink($f);
- return($s);
+ if ($cfg->exec_allowed) {
+  $ts = <<<TEXT
+\documentclass{article}
+\\newcommand{\N}{{\bf N}}
+\\newcommand{\Z}{{\bf Z}}
+\\newcommand{\Q}{{\bf Q}}
+\\newcommand{\R}{{\bf R}}
+\\newcommand{\C}{{\bf C}}
+\\newcommand{\mathbb}[1]{{\bf #1}}
+\begin{document}
+$tex_source
+\\end{document}
+
+TEXT;
+
+  file_put_contents($f,$ts);
+
+  $cmd = "{$cfg->tth_program} {$tth_opts} < " .  $f ." > {$f}.html";
+
+  exec($cmd);
+  if (file_exists($f . '.html')) {
+   $h = file_get_contents($f . '.html');
+   @ unlink($f);
+   @ unlink($f . '.html');
+   // fix bug whereby blank lines are appended to start
+   if(strpos($h,"\n\n\n\n\n \n")!==false) {
+    $h = str_replace("\n\n\n\n\n \n","",$h); 
+   }
+   return $h;
+  } else {
+   //   trigger_error('TtH failed: command = ' . $cmd);
+   return '';
+  }
+ } else {
+  file_put_contents($f,$tex_source);
+  $tth_url = 'http://' . $_SERVER['SERVER_NAME'] . '/cgi-bin/tth.pl';
+  $url = $tth_url . '?tex_file=' . $n . '&tth_opts=' . 
+   rawurlencode($tth_opts);
+  $h = file_get_contents($url);
+  // fix bug whereby blank lines are appended to start
+  if(strpos($h,"\n\n\n\n\n \n")!==false) {
+   $h = str_replace("\n\n\n\n\n \n","",$h); 
+  }
+  return($h);
+ }
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -568,7 +608,9 @@ SQL;
 function make_index($a,$key) {
  $b = array();
  foreach($a as $x) {
-  $b[$x->$key] = $x;
+  if ($x->$key) {
+   $b[$x->$key] = $x;
+  }
  }
  return($b);
 }

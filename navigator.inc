@@ -28,7 +28,7 @@ class frog_navigator {
    'autosuggest' => 1,
    'calendar' => 1,
    'mathjax' => <<<HTML
-  <script>MathJax = { tex : { inlineMath : [['$','$'],['\\(','\\)']] }};</script>
+  <script>MathJax = { tex : { inlineMath : [['$','$'],['\\\\(','\\\\)']] }};</script>
   <script id="MathJax-script" async
           src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
@@ -86,6 +86,7 @@ HTML
 <html>
 <head>
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>$title</title>
 <script type="text/javascript" src="{$fsu}"></script>
 
