@@ -106,14 +106,16 @@ class frog_html {
   return <<<HTML
  <table>
 
-HTML;
+HTML
+;
  }
 
  function table_end() {
   return <<<HTML
  </table>
 
-HTML;
+HTML
+;
  }
 
  //////////////////////////////////////////////////////////////////////
