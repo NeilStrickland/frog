@@ -538,21 +538,21 @@ HTML
   $html = <<<HTML
  <select name="$field_name"$oc$wd>$eo
 
-HTML;
-  for ($i = $min_session; $i <= $max_session; $i++ ){
+HTML
+;  for ($i = $min_session; $i <= $max_session; $i++ ){
    $s = ($session == $i) ? ' selected="selected"' : '';
    $ii = sprintf("%d/%02d", $i, $i-1999);
    $html .= <<<HTML
   <option value="$i"$s>$ii</option>
 
-HTML;
-  }
+HTML
+;  }
 
   $html .= <<<HTML
  </select>
 
-HTML;
-
+HTML
+;
   return($html);
  }
 
@@ -606,6 +606,8 @@ HTML
 	  );
  }
 
+ //////////////////////////////////////////////////////////////////////
+
  function full_semester_selector($field_name,$semester) {
   return selector($field_name,
 		  array('1' => '1 (Autumn)',
@@ -614,6 +616,15 @@ HTML
 		  $semester,
 		  array('mode' => 'direct')
 		  );
+ }
+
+ //////////////////////////////////////////////////////////////////////
+
+ function week_number_selector($field_name,$week_number = null,$opts=null) {
+  $values = array(1,2,3,4,5,6,7,8,9,10,11,12);
+  $oo = $opts;
+  if (! isset($oo['empty_option'])) { $oo['empty_option'] = true; }
+  return $this->selector($field_name,$values,$week_number,$oo);
  }
 
  //////////////////////////////////////////////////////////////////////
@@ -647,8 +658,8 @@ HTML
 <input type="text" name="{$field_name}_display" id="{$field_name}_display" class="autosuggest $type" $sz $st value="$v"/>
 <input type="hidden" name="$field_name" id="$field_name" class="autosuggest_{$type}" value="$id" $oc $extra/>
 
-HTML;
-}
+HTML
+;}
 
 
  //////////////////////////////////////////////////////////////////////
@@ -671,8 +682,8 @@ HTML;
    value="$date" $pm
   /><img class="link" alt="calendar" id="{$id}_button" src="{$this->icons_url}/calendar.png"/>
 
-HTML;
- }
+HTML
+; }
 
  //////////////////////////////////////////////////////////////////////
 
@@ -728,8 +739,8 @@ HTML;
  </textarea>
  <br/>
 
-HTML;
-
+HTML
+;
   if ($choices) {
    echo <<<HTML
   &nbsp; &nbsp; &nbsp; $choices_label
@@ -737,8 +748,8 @@ HTML;
    onChange="document.main_form.{$lf}.value=document.main_form.{$lf}_choice.value;frog.convert_latex('$lf');"
   >
 
-HTML;
-   foreach ($choices as $c) {
+HTML
+;   foreach ($choices as $c) {
     $s = ($c == $mlf) ? " selected=\"selected\"" : '';
     if ($c) {
      $v = '';
@@ -750,13 +761,13 @@ HTML;
     echo <<<HTML
    <option$v$s>$d</option>
 
-HTML;
-   }
+HTML
+;   }
    echo <<<HTML
   </select>
 
-HTML;
-  }
+HTML
+;  }
 
   echo <<<HTML
  <input type="hidden" name="{$lf}_latex_bottom" value="$lb"/>
@@ -775,8 +786,8 @@ HTML;
  <br/>
  </div>
 
-HTML;
- }
+HTML
+; }
 
  //////////////////////////////////////////////////////////////////////
 
@@ -827,8 +838,8 @@ HTML;
  </textarea>
  <br/>
 
-HTML;
-
+HTML
+;
   if ($choices) {
    echo <<<HTML
   &nbsp; &nbsp; &nbsp; $choices_label
@@ -836,8 +847,8 @@ HTML;
    onChange="document.main_form.{$lf}.value=document.main_form.{$lf}_choice.value;frog.convert_mathjax('$lf');"
   >
 
-HTML;
-   foreach ($choices as $c) {
+HTML
+;   foreach ($choices as $c) {
     $s = ($c == $mlf) ? " selected=\"selected\"" : '';
     if ($c) {
      $v = '';
@@ -849,13 +860,13 @@ HTML;
     echo <<<HTML
    <option$v$s>$d</option>
 
-HTML;
-   }
+HTML
+;   }
    echo <<<HTML
   </select>
 
-HTML;
-  }
+HTML
+;  }
 
   echo <<<HTML
  <input type="hidden" name="$fh" value="$x"/>
@@ -872,8 +883,8 @@ HTML;
  <br/>
  </div>
 
-HTML;
- }
+HTML
+; }
 
  //////////////////////////////////////////////////////////////////////
 
@@ -910,27 +921,27 @@ HTML;
  </textarea>
  <br/>
 
-HTML;
-
+HTML
+;
   if ($choices) {
    echo <<<HTML
   &nbsp; &nbsp; &nbsp; $choices_label
   <select id="{$lf}_choice" name="{$lf}_choice" 
    onchange="frog.text_pane_select_choice('$lf')">
 
-HTML;
-   foreach ($choices as $c) {
+HTML
+;   foreach ($choices as $c) {
     $s = ($c == $mlf) ? " selected=\"selected\"" : '';
     echo <<<HTML
    <option$s>$c</option>
 
-HTML;
-   }
+HTML
+;   }
    echo <<<HTML
   </select>
 
-HTML;
-  }
+HTML
+;  }
 
   echo <<<HTML
 
@@ -946,8 +957,8 @@ HTML;
  <br/>
  </div>
 
-HTML;
- }
+HTML
+; }
 
  //////////////////////////////////////////////////////////////////////
 
@@ -981,8 +992,8 @@ HTML;
  <br/>
  </div>
 
-HTML;
- }
+HTML
+; }
 
  //////////////////////////////////////////////////////////////////////
 
@@ -992,15 +1003,15 @@ HTML;
  <h2>Debug</h2>
  <br/>
 
-HTML;
-
+HTML
+;
    var_dump($_REQUEST);
 
  echo <<<HTML
  </div>
 
-HTML;
- }
+HTML
+; }
 
  //////////////////////////////////////////////////////////////////////
 
@@ -1009,8 +1020,8 @@ HTML;
   return <<<HTML
  <input type="hidden" name="$field_name" value="$v"/>
 
-HTML;
- }
+HTML
+; }
 
  //////////////////////////////////////////////////////////////////////
 
@@ -1028,8 +1039,8 @@ HTML;
   return <<<HTML
  <input type="text" name="$field_name" value="$v" {$pm}/>
 
-HTML;
- }
+HTML
+; }
 
  //////////////////////////////////////////////////////////////////////
 
@@ -1045,8 +1056,8 @@ HTML;
   return <<<HTML
  <input type="file" name="$field_name" {$sz}{$oc}/>
 
-HTML;
- }
+HTML
+; }
 
  //////////////////////////////////////////////////////////////////////
 
@@ -1065,8 +1076,8 @@ HTML;
  <a id="{$field_name}_check_button"
   href="javascript:frog.check_url_element('$field_name')">Check</a>
 
-HTML;
- }
+HTML
+; }
 
  //////////////////////////////////////////////////////////////////////
 
@@ -1083,8 +1094,8 @@ HTML;
   return <<<HTML
  <textarea name="$field_name" {$pm}>$val</textarea>
 
-HTML;
- }
+HTML
+; }
 
  //////////////////////////////////////////////////////////////////////
 
@@ -1093,21 +1104,21 @@ HTML;
  <table>
   <tr>
 
-HTML;
-
+HTML
+;
   foreach($commands as $k => $v) {
    $h .= <<<HTML
    <td class="command" onclick="$v">$k</td>
 
-HTML;
-  }
+HTML
+;  }
 
   $h .= <<<HTML
   </tr>
  </table>
 
-HTML;
-
+HTML
+;
   return($h);
  }
 
