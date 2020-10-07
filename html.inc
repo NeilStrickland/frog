@@ -118,6 +118,39 @@ HTML
 ;
  }
 
+ function edged_table_start() {
+  return <<<HTML
+ <table class="edged">
+
+HTML
+;
+ }
+
+ function edged_table_end() {
+  return <<<HTML
+ </table>
+
+HTML
+;
+ }
+
+ function tab_start($title) {
+  return <<<HTML
+ <div class="tabbertab">
+  <h2>{$title}</h2>
+
+HTML
+;
+ }
+
+ function tab_end() {
+  return <<<HTML
+ </div>
+
+HTML
+;
+ }
+
  //////////////////////////////////////////////////////////////////////
 
  function lnk($href,$text) {
@@ -275,7 +308,8 @@ HTML
   return <<<HTML
  <img id="{$id}_toggler" alt="toggle" src="$u"
   onclick="{$this->js_name}.toggle_display(this,'$id','$type')"/>
-HTML;
+HTML
+ ;
  }
 
  //////////////////////////////////////////////////////////////////////
@@ -454,7 +488,8 @@ HTML
   $html .= <<<HTML
   </select>
 
-HTML;
+HTML
+;
 
   return($html);
  }

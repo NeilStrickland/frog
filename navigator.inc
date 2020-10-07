@@ -29,13 +29,9 @@ class frog_navigator {
    'autosuggest' => 1,
    'calendar' => 1,
    'mathjax' => <<<HTML
-<script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"> 
-  MathJax.Hub.Config({
-    extensions: ["tex2jax.js"],
-    jax: ["input/TeX","output/HTML-CSS"],
-    tex2jax: {inlineMath: [["$","$"]]}
-  });
-</script>
+  <script>MathJax = { tex : { inlineMath : [['$','$'],['\\\\(','\\\\)']] }};</script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 HTML
 ,

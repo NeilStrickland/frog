@@ -311,6 +311,17 @@ JS;
  function get_safe_optional_parameter($p,$d) {
   return($this->sanitise(get_optional_parameter($p,$d)));
  }
+
+ function get_object_parameter($key,$object_type=null) {
+  $ot = $object_type;
+  if (! $ot) { $ot = $key; }
+  $k = ($key ==  '' || $key == 'id') ? 'id' : $key . '_id';
+  if (! isset($_REQUEST[$k])) {
+   return(false);
+  }
+
+  return $this->load($ot,(int) $_REQUEST[$k]);
+ }
 }
 
 //////////////////////////////////////////////////////////////////////
