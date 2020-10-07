@@ -692,6 +692,10 @@ HTML;
   return($this->object->descriptor());
  }
 
+ function display_page_widgets() {
+  return(array('tabber','autosuggest'));
+ }
+
  function display_page_command_bar() {
   echo <<<HTML
 <table>
@@ -722,7 +726,10 @@ HTML;
 
   if (! $t) { $t = $this->edit_page_title(); }
 
-  $this->frog->nav->header($t,array('widgets' => array('tabber')));
+  $this->frog->nav->header(
+   $t,
+   array('widgets' => $this->display_page_widgets())
+  );
 
   $logo = '';
   if (isset($nav->h1_logo)) {
