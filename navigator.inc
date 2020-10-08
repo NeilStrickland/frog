@@ -133,7 +133,7 @@ HTML;
  
   if ($this->styles) {
    foreach($this->styles as $s) {
-    $this->add_styles($s);
+    $this->add_style($s);
    }
   }
   
