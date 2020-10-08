@@ -556,7 +556,7 @@ HTML;
   }
  }
 
- function edit_page_stylesheets() {
+ function edit_page_styles() {
   global $cfg;
 
   $d = dirname($_SERVER['SCRIPT_FILENAME']);
@@ -581,14 +581,14 @@ HTML;
   $html = <<<HTML
 <table>
  <tr>
-  <td class="command" width="100" onclick="frog.do_command('save');">Save</td>
-  <td class="command" width="100" onclick="frog.do_command('load');">Restore</td>
+  <td id="save_td" class="command" width="100" onclick="frog.do_command('save');">Save</td>
+  <td id="load_td" class="command" width="100" onclick="frog.do_command('load');">Restore</td>
 
 HTML;
 
   if (isset($this->commands['suggest_delete'])) {
    $html .= <<<HTML
-  <td class="command" width="100" onclick="frog.do_command('suggest_delete');">Delete</td>
+  <td id="suggest_delete_td" class="command" width="100" onclick="frog.do_command('suggest_delete');">Delete</td>
 
 HTML;
   }
@@ -596,7 +596,7 @@ HTML;
   $u = $this->listing_url();
   if ($u) {
    $html .= <<<HTML
-  <td class="command" width="100" onclick="location='$u';">Index</td>
+  <td id="listing_td" class="command" width="100" onclick="location='$u';">Index</td>
 
 HTML;
   }
@@ -634,7 +634,7 @@ HTML;
    array(
     'widgets' => $this->edit_page_widgets(),
     'scripts' => $this->edit_page_scripts(),
-    'stylesheets' => $this->edit_page_stylesheets(),
+    'styles' => $this->edit_page_styles(),
     'onload' => $this->edit_page_onload()
    )
   );
