@@ -794,13 +794,13 @@ HTML;
    }
    header("Location: " . $url);
   } elseif ($command == 'save') {
+   $this->load_associated_lists_from_request();
    $this->save_in_database();
    $url = $this->redirect_after_save_url();
    if ($url) {
     header('Location:' . $url);
    } else {
     $this->load_from_database();
-    $this->load_associated_lists_from_request();
     $this->edit_page();
    }
   } elseif ($command == 'new') {
