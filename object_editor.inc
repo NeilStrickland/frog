@@ -794,8 +794,9 @@ HTML;
    }
    header("Location: " . $url);
   } elseif ($command == 'save') {
-   $this->load_associated_lists_from_request();
    $this->save_in_database();
+   $this->load_from_database();
+   $this->load_associated_lists_from_request();
    $url = $this->redirect_after_save_url();
    if ($url) {
     header('Location:' . $url);
