@@ -4,6 +4,7 @@ class frog_googler {
  var $log_file = '';
  var $credentials_dir = '';
  var $clients = array();
+ var $auth_uris = array();
  var $access_tokens = array();
  var $refresh_tokens = array();
  var $account_email = '';
@@ -37,8 +38,13 @@ class frog_googler {
   $client->setClientSecret($config->client_secret);
   $client->setAccessType('offline');
 
-  $this->access_tokens[$key] = null;
-  $this->refresh_tokens[$key] = null;
+  if (! isset($this->access_tokens[$key])) {
+   $this->access_tokens[$key] = null;
+  }
+  
+  if (! isset($this->refresh_tokens[$key])) {
+   $this->refresh_tokens[$key] = null;
+  }
 
   if (isset($user) && $user) {
    $msg = "------------------------------------------------\n";
@@ -65,7 +71,7 @@ class frog_googler {
 
   if (file_exists($access_token_file)) {
    $access_token_json = file_get_contents($access_token_file);
-   $access_token_arr  = json_decode($token_json,true);
+   $access_token_arr  = json_decode($access_token_json,true);
   } else {
    $access_token_json = '';
    $access_token_arr = array();
@@ -79,7 +85,7 @@ class frog_googler {
   
   $this->access_tokens[$key] = $access_token_arr;
   $this->refresh_tokens[$key] = $refresh_token;
-
+                   
   $msg = "------------------------------------------------\n";
   $msg .= date('Y-m-d H:i:s') . ": In get_access_token, key=$key\n";
   $msg .= "access_token = " . $access_token_json . "\n";
@@ -87,22 +93,26 @@ class frog_googler {
 
   $this->write_log($msg);
 
-  $client = $this->get_client($key);
- 
-  try {
-   $client->setAccessToken($access_token_arr);
-  } catch (Exception $x) {
-   $msg = "------------------------------------------------\n";
-   $msg .= date('Y-m-d H:i:s') . ": Error in setAccessToken()\n";
-   $msg .= var_export($access_token_arr,true);
-   $msg .= var_export($x,true);
-   $msg .= "\n";
-   $this->write_log($msg);
-   return false;
+  $access_token_ok = $access_token_arr ? true : false;
+
+  $client = $this->get_client('gmail');
+  
+  if ($access_token_ok) {
+   try {
+    $client->setAccessToken($access_token_arr);
+   } catch (Exception $x) {
+    $msg = "------------------------------------------------\n";
+    $msg .= date('Y-m-d H:i:s') . ": Error in setAccessToken()\n";
+    $msg .= var_export($access_token_arr,true);
+    $msg .= var_export($x,true);
+    $msg .= "\n";
+    $this->write_log($msg);
+    $access_token_ok = false;
+   }
   }
- 
-  if ($client->isAccessTokenExpired()) {
-   $msg .= "access_taken is expired\n";
+  
+  if (! $access_token_ok || $client->isAccessTokenExpired()) {
+   $msg .= "access_taken is null or expired\n";
   
    try {
     $client->refreshToken($refresh_token);
@@ -113,7 +123,7 @@ class frog_googler {
     $msg .= var_export($x,true);
     $msg .= "\n";
     $this->write_log($msg);
-    return false;
+    $access_token_ok = false;
    }
   }
 
@@ -128,7 +138,7 @@ class frog_googler {
    return false;
   }
   
-  $access_token_json = json_encode($token_arr);
+  $access_token_json = json_encode($access_token_arr);
   $msg = "------------------------------------------------\n";
   $msg .= date('Y-m-d H:i:s') . ": New token\n";
   $msg .= "New access_token = " . $access_token_json . "\n";
@@ -158,18 +168,10 @@ class frog_googler {
   }
  }
 
- function authorise_uri($key) {
-  $msg = "------------------------------------------------\n";
-  $msg .= date('Y-m-d H:i:s') . ": Error in authorise_uri()\n";
-  $msg .= "This method must be overridden by subclasses.\n";
-  $this->write_log($msg);
-  return false;
- }
- 
  function redirect_to_authorise($key) {
   $client = $this->get_client($key);
   $client->setScopes($this->get_scope($key));
-  $client->setRedirectUri($this->authorise_uri($key));
+  $client->setRedirectUri($this->auth_uris[$key]);
   $client->setAccessType('offline');
   $client->setApprovalPrompt('force');
   $auth_url = $client->createAuthUrl();
@@ -186,7 +188,7 @@ class frog_googler {
 
   $client = $this->get_client($key);
   $client->setScopes($this->get_scope($key));
-  $client->setRedirectUri($this->authorise_uri($key));
+  $client->setRedirectUri($this->auth_uris[$key]);
   $client->authenticate($code);
   
   $access_token_arr = $client->getAccessToken();
@@ -249,23 +251,39 @@ HTML
   if ($nav) { $nav->footer(); }
  }
 
- function get_mailer() {
+ function get_mailer() {  
   $this->get_account();
   $this->get_access_token('gmail');
-  $client = $this->clients['gmail'];
-  
-  $mail = new \PHPMailer\PHPMailer\PHPMailerOAuth();
-  $mail->isSMTP();
-  $mail->Host       = "ssl://smtp.gmail.com";
-  $mail->SMTPAuth   = true;
-  $mail->SMTPSecure = 'ssl';
-  $mail->AuthType   = 'XOAUTH2';
-  $mail->Port       = 465;
+  $client = $this->get_client('gmail');
 
-  $mail->oauthClientId     = $client->getClientId();
-  $mail->oauthClientSecret = $client->getClientSecret();
-  $mail->oauthRefreshToken = $this->refresh_tokens['gmail'];
-  $mail->oauthUserEmail    = $this->account_email;
+  $mail = new \PHPMailer\PHPMailer\PHPMailer();
+  $mail->isSMTP();
+  $mail->Host       = "smtp.gmail.com";
+  $mail->Port       = 587;
+  $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+  $mail->SMTPAuth   = true;
+  $mail->AuthType   = 'XOAUTH2';
+
+  $client_id = $client->getClientId();
+  $client_secret = $client->getClientSecret();
+  
+  $provider = new \League\OAuth2\Client\Provider\Google([
+   'clientId' => $client_id,
+   'clientSecret' => $client_secret
+  ]);
+
+  $mail->setOAuth(
+   new \PHPMailer\PHPMailer\OAuth(
+    [
+     'provider' => $provider,
+     'clientId' => $client_id,
+     'clientSecret' => $client_secret,
+     'refreshToken' => $this->refresh_tokens['gmail'],
+     'userName' => $this->account_email
+    ]
+   )
+  );
+  
   $mail->From              = $this->account_email;
   $mail->FromName          = $this->account_name; 
 
