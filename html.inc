@@ -134,6 +134,22 @@ HTML
 ;
  }
 
+ function tabber_start($id) {
+  return <<<HTML
+<div class="tabber" id="$id">
+
+HTML
+;
+ }
+ 
+ function tabber_end() {
+  return <<<HTML
+</div>
+
+HTML
+;
+ }
+
  function tab_start($title) {
   return <<<HTML
  <div class="tabbertab">
@@ -316,6 +332,7 @@ HTML
 
  function checkbox($name,$value = 0,$opts=null) {
   $defaults = array(
+   'id' => '',
    'onclick' => '',
    'onchange' => '',
    'disabled' => ''
@@ -337,21 +354,15 @@ HTML
   // code.
   if ($onchange && ! $onclick) { $onclick = $onchange; }
 
-  if ($onclick) {
-   $oc = " onclick=\"$onclick\"";
-  } else {
-   $oc = '';
-  }
-
-  if ($disabled) {
-   $dbd = " disabled=\"$disabled\"";
-  } else {
-   $dbd = '';
-  }
+  $oc = ''; $dbd = ''; $idd = '';
+  
+  if ($onclick)  { $oc = " onclick=\"$onclick\""; }
+  if ($disabled) { $dbd = " disabled=\"$disabled\""; }
+  if ($id)       { $idd = " id=\"$id\""; }
 
   $c = $value ? ' checked="checked"' : '';
   return(<<<HTML
-  <input type="checkbox" name="$name" $oc $dbd $c/>
+  <input type="checkbox" name="$name" $oc $dbd $idd $c/>
 
 HTML
  );
