@@ -548,12 +548,15 @@ HTML;
 
   $d = dirname($_SERVER['SCRIPT_FILENAME']);
   $f = basename($_SERVER['SCRIPT_FILENAME'],'.php');
+  $s = array();
 
-  if (file_exists($d . '/' . $f . '.js')) {
-   return(array($f));
-  } else {
-   return(array());
+  foreach(array('frog','objects_auto',$this->frog->name,$f) as $e) {
+   if (file_exists($d . '/js/' . $e . '.js')) {
+    $s[] = $e;
+   }
   }
+
+  return $s;
  }
 
  function edit_page_styles() {
