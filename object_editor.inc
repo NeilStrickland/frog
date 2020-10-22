@@ -427,6 +427,17 @@ class frog_object_editor {
   $this->object->save();
  }
 
+ function h1_logo() {
+  $logo = '';
+  if (isset($this->frog->nav) && $this->frog->nav) {
+    $nav = $this->frog->nav;
+    if (isset($nav->h1_logo)) {
+      $logo = $nav->h1_logo;
+    }
+  }
+  return $logo;
+ }
+
  /* The delete_object() method deletes $this->object from the
   * database.  A few subclasses of frog_object override the
   * delete method and perform additional tasks.
@@ -461,7 +472,7 @@ class frog_object_editor {
   
   echo <<<HTML
 
-<h1>{$this->frog->h1_logo} $ttl</h1>
+<h1>{$this->h1_logo()} $ttl</h1>
 <br/>
 <p class="text">
 $msg
@@ -613,19 +624,6 @@ HTML;
   return $html;
  }
 
- /* Editor pages associated with a module typically have an extra
-  * navigation menu with additional items related to the module,
-  * which is placed at the top of the page.  These menus are 
-  * generated in a slightly unusual way via javascript: we have
-  * to leave space for the menu when generating the top part of
-  * the page, then call the module_menu() function (defined in 
-  * widgets.inc) when generating the end of the page.  If the
-  * has_module_menu() method is overridden to return 1 then the
-  * edit_page_header() method will automatically leave space in 
-  * the appropriate place, but the edit_page() and display_page()
-  * methods will still need to call module_menu() explicitly.
-  */
- function has_module_menu() { return 0; }
 
  function edit_page_header() {
   global $cfg;
@@ -642,16 +640,10 @@ HTML;
    )
   );
 
-  if ($this->has_module_menu()) { echo '<br/><br/>'; }
-
   $enc = $this->allow_upload() ? 'enctype="multipart/form-data"' : '';
-  $logo = '';
-  if (isset($nav->h1_logo)) {
-   $logo = $nav->h1_logo;
-  }
   
   echo <<<HTML
-<h1>{$logo} $t</h1>
+<h1>{$this->h1_logo()} $t</h1>
 
 <form name="main_form" action="$here" $enc method="POST">
 <input type="hidden" name="id" value="{$this->object->id}"/>
@@ -734,13 +726,8 @@ HTML;
    array('widgets' => $this->display_page_widgets())
   );
 
-  $logo = '';
-  if (isset($nav->h1_logo)) {
-   $logo = $nav->h1_logo;
-  }
-  
   echo <<<HTML
-<h1>{$logo} $t</h1>
+<h1>{$this->h1_logo()} $t</h1>
 
 HTML;
 
