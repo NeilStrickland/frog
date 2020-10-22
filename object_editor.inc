@@ -492,7 +492,7 @@ $msg
 
 HTML;
 
-  $this->frog->footer(); 
+  $this->frog->nav->footer(); 
 
  }
 
