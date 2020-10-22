@@ -51,7 +51,11 @@ class frog_suggester {
 
  function send_suggestions() {
   if (isset($_REQUEST['s'])) {
-   $this->search_term = $this->frog->sanitise($_REQUEST['s']);
+   if ($this->frog) {
+    $this->search_term = $this->frog->sanitise($_REQUEST['s']);
+   } else {
+    $this->search_term = preg_replace("/[^A-Za-z0-9,' \-]/", '',$_REQUEST['s']);
+   }
   } else {
    $this->search_term = '';
   }
