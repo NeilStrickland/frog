@@ -763,14 +763,14 @@ class frog_object {
   
   $q = "INSERT INTO $n (";
   foreach($m->fields as $k => $v) {
-   if ($k != 'id' && $k != 'update_time') {
+   if ($k != 'id' && $k != 'update_time' && $k != 'timestamp') {
     $q .= '`' . $k . '`,';
    }
   }
   $q = substr($q,0,strlen($q)-1) . ') VALUES (';
   
   foreach($m->fields as $k => $v) {
-   if ($k != 'id' && $k != 'update_time') {
+   if ($k != 'id' && $k != 'update_time' && $k != 'timestamp') {
     $t = $v['type'];
     $x = $this->$k;
     
@@ -818,7 +818,7 @@ class frog_object {
   $pk = $m->primary_key;
   $q = "UPDATE $n SET ";
   foreach($m->fields as $k => $v) {
-   if ($k != $pk && $k != 'update_time' && isset($this->$k)) {
+   if ($k != $pk && $k != 'update_time'  && $k != 'timestamp' && isset($this->$k)) {
     $t = $v['type'];
     $x = $this->$k; 
     
@@ -924,7 +924,7 @@ class frog_object {
    $t = $v['type'];
    $pf = $prefix . $f;
    if ($f != 'id' && isset($_REQUEST[$pf])) { 
-    $x = stripslashes($_REQUEST[$prefix . $f]);
+    $x = $_REQUEST[$prefix . $f];
     
     if ($t == 'integer') {
      $x = (int) $x;
