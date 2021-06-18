@@ -661,8 +661,8 @@ HTML
   if ($id) { $ii = ",$id"; }
 
   $extra = '';
-  foreach ($oo['extra'] as $k => $v) {
-   $extra .= " $k=\"$v\"";
+  foreach ($oo['extra'] as $k => $vk) {
+   $extra .= " $k=\"$vk\"";
   }
 
   return <<<HTML
