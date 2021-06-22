@@ -488,7 +488,7 @@ class frog_table {
  function count_where($w) {
   #  $q = "SELECT COUNT({$this->primary_key}) FROM view_{$this->name_plural} WHERE $w";
   $q = "SELECT COUNT({$this->primary_key}) FROM tbl_{$this->name_plural} WHERE $w";
-  return (int) get_answer($q);
+  return (int) $this->parent->get_answer($q);
  }
 
  function delete($id) {
@@ -694,7 +694,7 @@ class frog_object {
   $is_error = false;
   $eh = set_error_handler("ignore_errors");
   $x = $this->parent->load_table($this->object_type)->load_the_one_where($w);
-  foreach(somas_all_field_names($this->object_type) as $f) {
+  foreach($this->parent->all_field_names($this->object_type) as $f) {
    $this->$f = $x->$f;
   }
   set_error_handler($eh);
@@ -784,6 +784,8 @@ class frog_object {
      $s = $x ? 1 : 0;
     } elseif ($t == 'date' && ($x == '0000-00-00' || ! $x)) {
      $s = 'NULL';
+    } elseif ($t == 'time' && ! $x) {
+      $s = 'NULL';
     } else {
      $s = "'" . $this->parent->db->real_escape_string($x) . "'";
     }
@@ -832,6 +834,8 @@ class frog_object {
      $s = $x ? 1 : 0;
     } elseif ($t == 'date' && ($x == '0000-00-00' || ! $x)) {
      $s = 'NULL';
+    } elseif ($t == 'time' && ! $x) {
+      $s = 'NULL';
     } else {
      $s = "'" . $this->parent->db->real_escape_string($x) . "'";
     }
@@ -901,7 +905,9 @@ class frog_object {
   $ff = $this->parent->load_table($this->object_type)->fields;
   foreach ($ff as $f => $v) {
    $s = $this->$f;
-   if ($f != 'id' && $this->$f) { return(false); }
+   $d = null;
+   if (isset($v['default'])) { $d = $v['default']; }
+   if ($f != 'id' && $this->$f && $this->$f != $d) { return(false); }
   }
   return(true);
  }
@@ -1036,8 +1042,7 @@ class frog_object {
  }
  
  function json($fields = null) {
-  $json = new Services_JSON();
-  return($json->encode($this->prune($fields)));
+  return(json_encode($this->prune($fields)));
  }
  
  function set_prefix($n = '') {
