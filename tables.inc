@@ -1091,16 +1091,18 @@ class frog_object {
  }
 
  function remover_box($level = 1) {
-  global $cfg;
+  $u = $this->parent->html->icons_url;
+  $n = $this->parent->name;
+  
   return '<input type="checkbox" name="remove_' . $this->prefix . 
-   '" onclick="somas.checkbox_hide_siblings(this,' . $level . ')"/>' .
-   '<img alt="remove" src="' . $cfg->icons_url . '/bin.png"/>';
+   '" onclick="frog.checkbox_hide_siblings(this,' . $level . ')"/>' .
+   '<img alt="remove" src="' . $u . '/bin.png"/>';
  }
  
- function wrap_remover($h) {
+ function wrap_remover($h,$level = 1) {
   $id = $this->prefix . '_wrapper';
   return '<tr><td id="' . $id . '">' . $h . '</td><td valign="top">' .
-   $this->remover_box($id) . '</td></tr>';
+   $this->remover_box($level) . '</td></tr>';
  }
 }
 
