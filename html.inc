@@ -191,6 +191,26 @@ HTML
  );
  }
 
+ function button($text,$action = null) {
+  if ($action) {
+   return "<button type=\"button\" onclick=\"{$action}\">$text</button>";
+  } else {
+   return "<button type=\"button\">$text</button>";
+  }
+ }
+
+ function button_link($text,$url) {
+  return $this->button($text,"location='{$url}'");
+ }
+ 
+ function button_popup($text,$url) {
+  return $this->button($text,"window.open('{$url}')");
+ }
+
+ function submit_button($text) {
+  return "<button type=\"submit\">{$text}</button>";
+ }
+ 
  //////////////////////////////////////////////////////////////////////
 
  function icon($f) {
@@ -638,6 +658,25 @@ HTML
   return $this->selector($field_name,$values,$week_number,$oo);
  }
 
+
+ //////////////////////////////////////////////////////////////////////
+
+ function week_parity_selector($field_name,$parity='') {
+  $pp = array('e' => 'even','o' => 'odd');
+
+  return $this->selector($field_name,$pp,$parity,
+  	 array('mode' => 'direct','empty_option' => true));
+ }
+
+ //////////////////////////////////////////////////////////////////////
+
+ function day_selector($field_name,$day_number = null) {
+  $dd = array(1 => 'Mon',2 => 'Tue',3 => 'Wed',4 => 'Thu',5 => 'Fri',6 => 'Sat',7 => 'Sun');
+
+  return $this->selector($field_name,$dd,$day_number,
+  	 array('mode' => 'direct','empty_option' => true));
+ }
+
  //////////////////////////////////////////////////////////////////////
 
  function ajax_selector($type,$field_name,$id='',$val='',$opts=null) {
@@ -692,6 +731,29 @@ HTML
    onchange="{$this->js_name}.check_date('$id');$onchange"
    value="$date" $pm
   /><img class="link" alt="calendar" id="{$id}_button" src="{$this->icons_url}/calendar.png"/>
+
+HTML
+; }
+
+ //////////////////////////////////////////////////////////////////////
+
+ function time_box($id,$time,$opts = null) {
+  $onchange = ($opts && isset($opts['onchange'])) ? $opts['onchange'] : '';
+  $opts['onchange'] = NULL;
+
+  $pm = '';
+  foreach ($opts as $k => $v) {
+   if ($v) {
+    $pm .= " $k=\"$v\"";
+   }
+  }
+
+  return <<<HTML
+  <input type="text" class="time"
+   name="$id" id="$id"
+   onchange="{$this->js_name}.check_time('$id');$onchange"
+   value="$time" $pm
+  />
 
 HTML
 ; }
