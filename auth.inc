@@ -90,11 +90,12 @@ TEXT;
    $uu = $f->load_where($this->user_table,$w);
    if (count($uu) != 1) {
     if (! $uu) {
-     $params->login_error = 'user_key not found';
+     $params->login_error = 'user_key ' . $params->$k . ' not found';
     } else {
-     $params->login_error = 'multiple matches for user_key';
+     $params->login_error = 'multiple matches for user_key ' . $params->$k;
     }
-   
+    $this->write_login_log('Key error : ' . $params->login_error);
+    
     $this->frog->nav->request_login_page($params);
     exit;
    }
@@ -108,7 +109,8 @@ TEXT;
     $this->after_login($params);
     $this->redirect_to_requested_url($params);
    } else {
-    $this->write_login_log('Password error: ' . $x->error);
+    $this->write_login_log('Password error : ' . $x->error);
+    $this->write_login_log(var_export($params->user,true));
     $params->login_error = $x->error;
     $this->frog->nav->request_login_page($params);
    }
