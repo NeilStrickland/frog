@@ -289,5 +289,37 @@ HTML
 
   return $mail;
  }
+
+ function get_message_body($msg) {
+  $body = $this->get_message_body_aux($msg->payload);
+  if (array_key_exists('html',$body)) {
+   return $body['html'];
+  } else {
+   return $body['plain'];
+  }
+ }
+
+ function get_message_body_aux($part) {
+  if ($part->mimeType == 'text/html') {
+   return ['html' => $this->decode_body($part->body->data)];
+  } else if ($part->mimeType == 'text/plain') {
+   return ['plain' => $this->decode_body($part->body->data)];
+  } else if ($part->parts) {
+   $return = [];
+   foreach($part->parts as $sub_part) {
+    $result = $this->get_message_body_aux($sub_part);
+    $return = array_merge($return, $result);
+    if (array_key_exists('html', $return))
+     break;
+   }
+   return $return;
+  }
+  return [];
+ }
+
+ function decode_body($encoded) {
+  $sanitized = strtr($encoded,'-_', '+/');
+  return base64_decode($sanitized);
+ }
 }
 
