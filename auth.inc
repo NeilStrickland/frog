@@ -11,10 +11,25 @@ class frog_auth {
  var $user_key_regex = '/^[A-Za-z0-9]+$/i';
  var $user_is_current_clause = "x.is_expired=0";
  var $use_ldap = false;
- var $ldap_server;
- var $ldap_base_dn;
- var $login_log_file;
+ var $ldap_server = null;
+ var $ldap_bind_dn = null;
+ var $ldap_bind_pw = null;
+ var $ldap_base_dn = null;
+ var $ldap_user_key = 'uid';
+ var $login_log_file = null;
+
+ var $password_notify_from = null;
  
+ var $new_password_subject = "Credentials";
+
+ var $new_password_body = <<<TEXT
+Your credentials are as follows:
+URL: __URL__
+User name: __USERNAME__
+Password: __PASSWORD__
+
+TEXT;
+
  function __construct($frog) {
   $this->frog = $frog;
   $keys = array();
@@ -119,14 +134,47 @@ TEXT;
   }
  }
 
+ function random_password(
+   $length = 8,
+   $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+ ) {
+  $str = '';
+  $max = mb_strlen($keyspace, '8bit') - 1;
+  if ($max < 1) {
+   throw new Exception('$keyspace must be at least two characters long');
+  }
+  for ($i = 0; $i < $length; ++$i) {
+   $str .= $keyspace[random_int(0, $max)];
+  }
+  return $str;
+ }
+ 
  function check_password($params) {
   return $this->hash_check_password($params->user->password_hash,
 				    $params->password);
+ }
+
+ function generate_and_notify_password($user) {
+  $p = $this->random_password();
+  $user->set_password($p);
+  $user->save();
+  $to = $user->email_address;
+  if (! $to) { return false; }
+  $subject = $this->new_password_subject;
+  $body = $this->new_password_body;
+  $url = 'http://' . $_SERVER['HTTP_HOST'] . $this->frog->nav->base_url;
+  $body = str_replace('__URL__',$url,$body);
+  $body = str_replace('__USERNAME__',$user->username,$body);
+  $body = str_replace('__PASSWORD__',$p,$body);
+  $ret = mail($to,$subject,$body,
+       array('From' => $this->password_notify_from));
+  return $ret; 
  }
  
  function hash_check_password($hash,$password) {
   $x = new stdClass();
   $x->ok = false;
+  $x->method = 'hash';
   $x->error = '';
   
   if (! $password) {
@@ -154,6 +202,7 @@ TEXT;
  function ldap_check_password($user_key,$password) {
   $x = new stdClass();
   $x->ok = false;
+  $x->method = 'ldap';
   $x->error = '';
   
   if (! $user_key) {
@@ -175,8 +224,26 @@ TEXT;
   }
 
   $ds = ldap_connect($this->ldap_server);
-  $r  = ldap_bind( $ds );
-  $sr = ldap_search( $ds, $this->ldap_base_dn, "uid=$user_key" );
+
+  if (! $ds) {
+   $x->ok = false;
+   $x->error = 'LDAP connect failed';
+   return $x;
+  }
+  
+  ldap_set_option($ds, LDAP_OPT_REFERRALS, 0);
+  ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
+
+  $r  = ldap_bind( $ds, $this->ldap_bind_dn, $this->ldap_bind_pw );
+
+  if (! $r) {
+   $x->ok = false;
+   $x->error = 'LDAP bind failed';
+   return $x;
+  }
+
+  $x->query = "{$this->ldap_user_key}=$user_key";
+  $sr = ldap_search( $ds, $this->ldap_base_dn,  $x->query);
   
   if ( ldap_count_entries( $ds, $sr ) != 1 ) {
    $x->ok = false;
