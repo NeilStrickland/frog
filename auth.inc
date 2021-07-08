@@ -45,6 +45,12 @@ TEXT;
   $this->logged_in_key = $frog->name . '_logged_in';
   $this->token_key     = $frog->name . '_token';
   $this->user_id_key   = $frog->name . '_user_id';
+
+  if (isset($frog->mailer)) {
+   $this->mailer = $this->frog->mailer;
+  } else {
+   $this->mailer = new frog_mailer();
+  }
  }
 
  function require_login() {
@@ -166,9 +172,12 @@ TEXT;
   $body = str_replace('__URL__',$url,$body);
   $body = str_replace('__USERNAME__',$user->username,$body);
   $body = str_replace('__PASSWORD__',$p,$body);
-  $ret = mail($to,$subject,$body,
-       array('From' => $this->password_notify_from));
-  return $ret; 
+
+  if (! isset($this->mailer)) {
+   $this->mailer = new frog_mailer();
+  }
+  
+  return $this->mailer->mail($to,$subject,$body,$this->password_notify_from);
  }
  
  function hash_check_password($hash,$password) {
