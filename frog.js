@@ -92,6 +92,49 @@ frog.object.load = function() {
 
 //////////////////////////////////////////////////
 
+frog.object.full_load = function() {
+ var i,x;
+
+ if (! (this.object_type && this.key && this[this.key])) {
+  return(null);
+ }
+
+ s =
+   'command=full_load' +
+   '&object_type='  + encodeURIComponent(this.object_type) +
+   '&' + this.key + '=' + encodeURIComponent(this[this.key]);
+
+ xhr = frog.create_xhr();
+
+ try {
+  xhr.open('GET',this.ajax_url + '/db.php?' + s,false);
+ } catch(e) {
+  alert('frog.object.load: Could not open XMLHttpRequest object to connect to server');
+  return(null);
+ }
+
+ try {
+  xhr.send(null);
+ } catch(e) {
+  alert('frog.object.load: Could not send XMLHttpRequest object to connect to server');
+  return(null);
+ }
+
+ if (xhr.status == 200) {
+  x = JSON.parse(xhr.responseText);
+  if (x && ! x.error) {
+   this.munch(x);
+   return(this);
+  } else {
+   return(null);
+  }
+ } else {
+  return(null);
+ }
+};
+
+//////////////////////////////////////////////////
+
 frog.object.insert = function() {
  var data,s,xhr;
  data = new Object();
@@ -363,7 +406,7 @@ frog.check_date = function(id) {
  var n,m,day,month,year;
 
  if (d == '=') {
-  d = this.todays_date();
+  d = frog.todays_date();
   e.value = d;
   this.saved_values[id] = d;
  }
@@ -416,7 +459,7 @@ frog.check_time = function(id) {
  h = '' + ((h < 10) ? '0' : '') + h;
  m = '' + ((m < 10) ? '0' : '') + m;
  s = '' + ((s < 10) ? '0' : '') + s;
- d = h + ':' + m + ':' : s;
+ d = h + ':' + m + ':' + s;
  e.value = d;
  this.saved_values[id] = d;
 }
