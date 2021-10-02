@@ -298,7 +298,7 @@ class frog_object_editor {
   $name = $a['name'];
   $plural = $name . 's';
   $type = $name;
-  $link = "{$this->object_type}_id";
+  $link = "x.{$this->object_type}_id";
   if (isset($a['type'])) { $type = $a['type']; }
   if (isset($a['plural'])) { $plural = $a['plural']; }
   if (isset($a['link'])) { $link = $a['link']; }
@@ -624,7 +624,6 @@ HTML;
   return $html;
  }
 
-
  function edit_page_header() {
   global $cfg;
   $t = $this->edit_page_title();
@@ -687,8 +686,31 @@ HTML;
   return($this->object->descriptor());
  }
 
+ function display_page_styles() {
+  return(array());
+ }
+
+ function display_page_scripts() {
+  global $cfg;
+
+  $d = dirname($_SERVER['SCRIPT_FILENAME']);
+  $s = array();
+
+  foreach(array('frog','objects_auto',$this->frog->name) as $e) {
+   if (file_exists($d . '/js/' . $e . '.js')) {
+    $s[] = $e;
+   }
+  }
+
+  return $s;
+ }
+
  function display_page_widgets() {
   return(array('tabber','autosuggest'));
+ }
+
+ function display_page_onload() {
+  return '';
  }
 
  function display_page_command_bar() {
@@ -723,7 +745,12 @@ HTML;
 
   $this->frog->nav->header(
    $t,
-   array('widgets' => $this->display_page_widgets())
+   array(
+    'widgets' => $this->display_page_widgets(),
+    'scripts' => $this->display_page_scripts(),
+    'styles' => $this->display_page_styles(),
+    'onload' => $this->display_page_onload()
+   )
   );
 
   echo <<<HTML
