@@ -10,6 +10,7 @@ class frog_suggester {
  public $fade_field = '';
  public $descriptor_query = '';
  public $search_term;
+ public $response;
 
  function __construct($frog) {
   $this->frog = $frog;
@@ -109,18 +110,24 @@ SQL;
   $results = $this->get_all($query);
   $n = 0;
   foreach($results as $x) {
-   $this->add_suggestion($x);
-   $n++;
+   if ($this->add_suggestion($x)) { $n++; }
   }
   return($n);
  }
 
  function add_suggestion($x) {
+  if (isset($this->response->vals[$x->k]) &&
+      $this->response->vals[$x->k] == $x->v) {
+   return false;
+  };
+  
   $this->response->keys[] = $x->k;
   $this->response->vals[$x->k] = $x->v;
   if (isset($x->f) && $x->f) {
    $this->response->fade[$x->k] = 1;
   }
+
+  return true;
  }
 
  function get_all($q) {
@@ -131,9 +138,16 @@ SQL;
    trigger_error($msg,E_USER_ERROR);
   }
 
-  $rows= array();
-  while($x = $result->fetch_object()) {
-   $rows[] = $x;
+  if ($this->frog->db_type == 'sqlite') {
+   $rows = array();
+   while($x = $result->fetchArray(SQLITE3_ASSOC)) {
+    $rows[] = (object) $x;
+   }
+  } else {
+   $rows= array();
+   while($x = mysqli_fetch_object($result)) {
+    $rows[] = $x;
+   }
   }
   return($rows);
  }
