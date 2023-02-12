@@ -9,16 +9,30 @@ class frog {
  var $config;
  var $cache;
  var $db_name = '';
+ var $db_type = 'mysql';
  var $db_host = 'localhost';
  var $db_port = 3306;
- 
+ var $db_file = '';
+
  function __construct() {
   $this->registry = array();
   $this->config = array();
   $this->cache = array();
  }
 
- function connect($db_user,$db_pass) {
+ function connect($db_user = '',$db_pass = '') {
+  if ($this->db_type == 'sqlite') {
+    $this->connect_sqlite();
+  } else {
+    $this->connect_mysql($db_user,$db_pass);
+  }
+ }
+
+ function connect_sqlite() {
+  $this->db = new SQLite3($this->db_file);
+ }
+
+ function connect_mysql($db_user,$db_pass) {
   $n = $this->db_name ? $this->db_name : $db_user;
   $this->db = mysqli_connect($this->db_host,$db_user,$db_pass,$n,$this->db_port);
 
@@ -31,6 +45,14 @@ class frog {
   $this->db->set_charset('utf8');
  }
  
+ function escape_string($s) {
+  if ($this->db_type == 'sqlite') {
+    return SQLite3::escapeString($s);
+  } else {
+    return $this->db->real_escape_string($s);
+  }
+ } 
+
  function load_config() {
   $xx = $this->get_all('SELECT * FROM tbl_config');
 
@@ -41,7 +63,7 @@ class frog {
  }
 
  function get_config($key) {
-  $k = $this->db->real_escape_string($key);
+  $k = $this->escape_string($key);
   $xx = $this->get_all("SELECT * FROM tbl_config WHERE `key`='$k'");
   if ($xx) {
    if (! isset($this->config)) { $this->config = array(); }
@@ -54,8 +76,8 @@ class frog {
 
  function set_config($key,$value) {
   global $db_somas;
-  $k = $this->db->real_escape_string($key);
-  $v = $this->db->real_escape_string($value);
+  $k = $this->escape_string($key);
+  $v = $this->escape_string($value);
   $xx = $this->get_all("SELECT * FROM tbl_config WHERE `key`='$k'");
   if ($xx) {
    $this->db->query("UPDATE tbl_config SET `value`='$v' WHERE `key`='$k'");
@@ -129,21 +151,36 @@ class frog {
   }
  }
 
+ function get_error() {
+  if ($this->db_type == 'sqlite') {
+   return $this->db->lastErrorMsg();
+  } else {
+   return mysqli_error($this->db);
+  }
+ }
+ 
  function get_all($q) {
   //  echo "<pre>\r\n{$q}\r\n</pre>\r\n"; flush(); exit; // DEBUG
   $result = $this->db->query($q);
   if ($result === FALSE) {
-   //  $msg = 'MySQL error in get_all:' . mysqli_error();
-   $msg = 'MySQL error in get_all:' . mysqli_error($this->db) . '<br/>' .
+   $msg = 'Database error in get_all: ' . $this->get_error() . '<br/>' .
     "query:\r\n<pre>\r\n$q\r\n</pre>\r\n";
    echo $msg;
    trigger_error($msg,E_USER_ERROR);
   }
 
-  $rows= array();
-  while($x = mysqli_fetch_object($result)) {
-   $rows[] = $x;
+  if ($this->db_type == 'sqlite') {
+   $rows = array();
+   while($x = $result->fetchArray(SQLITE3_ASSOC)) {
+    $rows[] = (object) $x;
+   }
+  } else {
+   $rows= array();
+   while($x = mysqli_fetch_object($result)) {
+    $rows[] = $x;
+   }
   }
+
   return($rows);
  }
 
@@ -151,7 +188,7 @@ class frog {
   $result = $this->db->query($q);
   if ($result === FALSE) {
    pre_print($this->db);
-   $msg = 'MySQL error in get_answer:' . mysqli_error($this->db);
+   $msg = 'Database error in get_answer:' . $this->get_error();
    // . '<br/>' . "query:\r\n<pre>\r\n$q\r\n</pre>\r\n";
    trigger_error($msg,E_USER_ERROR);
   }
@@ -304,7 +341,7 @@ JS;
  }
 
  function sanitise($s) {
-  return ($this->db->real_escape_string($s));
+  return ($this->escape_string($s));
  }
 
  function get_safe_required_parameter($p) {
@@ -330,7 +367,8 @@ JS;
 //////////////////////////////////////////////////////////////////////
 
 class frog_table {
- var $parent,$name,$fields,$extra_fields,$subtypes;
+ var $parent,$name,$name_plural,$fields,$extra_fields,$subtypes,
+  $primary_key,$primary_key_type,$query_string;
 
  function __construct($p,$n,$nn,$f,$e,$q=null) {
   $this->parent = $p;
@@ -497,7 +535,7 @@ class frog_table {
   $r = $this->parent->db->query($q);
   if ($r === FALSE) {
    trigger_error('Could not delete ' . $this->name .
-		 ' from database: ' . $q . ';' . mysqli_error($this->parent->db),E_USER_ERROR);
+		 ' from database: ' . $q . ';' . $this->parent->get_error(),E_USER_ERROR);
   }
  }
 
@@ -523,7 +561,9 @@ JS;
 class frog_object {
  var $parent;
  var $object_type;
+ var $base_type;
  var $id;
+ var $title;
 
  function __construct($p,$ot,$id = null,$with_defaults=1) {
   $this->parent = $p;
@@ -627,9 +667,13 @@ class frog_object {
 
   if ($s === FALSE) {
    trigger_error('Error loading ' . $this->object_type . ': '
-    . mysqli_error($this->parent->db),E_USER_ERROR);
+    . $this->parent->get_error(),E_USER_ERROR);
   }
-  $r = mysqli_fetch_object($s);
+  if ($this->parent->db_type == 'sqlite') {
+   $r = (object) $s->fetchArray(SQLITE3_ASSOC);
+  } else {
+   $r = mysqli_fetch_object($s);
+  }
   if ($r) {
    foreach($m->fields as $k => $v) {
     if ($v['type'] == 'integer') {
@@ -676,7 +720,7 @@ class frog_object {
   
   if ($s === FALSE) {
    trigger_error('Error loading ' . $this->object_type . ': ' .
-		 mysqli_error($this->parent->db),E_USER_ERROR);
+		 $this->parent->get_error(),E_USER_ERROR);
   }
   $r = mysqli_fetch_object($s);
   if ($r) {
@@ -787,7 +831,7 @@ class frog_object {
     } elseif ($t == 'time' && ! $x) {
       $s = 'NULL';
     } else {
-     $s = "'" . $this->parent->db->real_escape_string($x) . "'";
+     $s = "'" . $this->parent->escape_string($x) . "'";
     }
     
     $q .= $s . ',';
@@ -799,11 +843,15 @@ class frog_object {
   
   if($s === FALSE) {
    trigger_error('Could not insert ' . $this->object_type . ' in database: ' .
-		 mysqli_error($this->parent->db) . "<br/>\r\n" . $q,E_USER_ERROR);
+		 $this->parent->get_error() . "<br/>\r\n" . $q,E_USER_ERROR);
   }
   
   if ($pk == 'id') {
-   $this->id = mysqli_insert_id($this->parent->db);
+   if ($this->parent->db_type == 'sqlite') {
+    $this->id = $this->parent->db->lastInsertRowID();
+   } else {
+    $this->id = mysqli_insert_id($this->parent->db);
+   }
   }
  }
  
@@ -837,7 +885,7 @@ class frog_object {
     } elseif ($t == 'time' && ! $x) {
       $s = 'NULL';
     } else {
-     $s = "'" . $this->parent->db->real_escape_string($x) . "'";
+     $s = "'" . $this->parent->escape_string($x) . "'";
     }
     
     $q .= '`' . $k . '`=' . $s . ',';
@@ -856,7 +904,7 @@ class frog_object {
   
   if($s === FALSE) {
    trigger_error('Could not update ' . $this->object_type .
-		 ' in database: ' . mysqli_error($this->parent->db) .
+		 ' in database: ' . $this->parent->get_error() .
    '<br/><pre>' . $q . '</pre>',E_USER_ERROR);
   }
  }
@@ -885,7 +933,7 @@ class frog_object {
   $r = $this->parent->db->query($q);
   if ($r === FALSE && ! $ignore_errors) {
    trigger_error('Could not delete ' . $this->name .
-		 ' from database: ' . $q . ';' . mysqli_error($this->parent->db),E_USER_ERROR);
+		 ' from database: ' . $q . ';' . $this->parent->get_error(),E_USER_ERROR);
   }
  }
  
@@ -896,7 +944,7 @@ class frog_object {
    $q = "DELETE FROM tbl_{$table->plural} WHERE {$link_field}={$this->id}";
    $r = $this->parent->db->query($q);
    if ($r === FALSE) {
-    trigger_error('Could not delete linked entries: ' . $q . ';' . mysqli_error($this->parent->db),E_USER_ERROR);
+    trigger_error('Could not delete linked entries: ' . $q . ';' . $this->parent->get_error(),E_USER_ERROR);
    }
   }
  }
