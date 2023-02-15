@@ -133,7 +133,7 @@ SQL;
  function get_all($q) {
   $result = $this->frog->db->query($q);
   if ($result === FALSE) {
-   $msg = 'MySQL error in get_all:' . mysqli_error($this->frog->db) . '<br/>' .
+   $msg = 'Database error in get_all:' . $this->frog->get_error() . '<br/>' .
     "query:\r\n<pre>\r\n$q\r\n</pre>\r\n";
    trigger_error($msg,E_USER_ERROR);
   }
@@ -155,7 +155,7 @@ SQL;
  function get_answer($q) {
   $result = $this->frog->db->query($q);
   if ($result === FALSE) {
-    $msg = 'MySQL error in get_answer:' . mysqli_error($this->frog->db) . '<br/>' .
+    $msg = 'Database error in get_answer:' . $this->frog->get_error() . '<br/>' .
      "query:\r\n<pre>\r\n$q\r\n</pre>\r\n";
    trigger_error($msg,E_USER_ERROR);
   }
