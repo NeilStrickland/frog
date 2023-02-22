@@ -968,7 +968,9 @@ HTML
    'instructions'  => '',
    'tab_title'     => $f,
    'choices'       => null,
-   'choices_label' => 'Standard choices'
+   'choices_label' => 'Standard choices',
+   'cols'          => 100,
+   'rows'          => 15
   );
 
   foreach ($defaults as $k => $v) {
@@ -989,7 +991,7 @@ HTML
 
  $instructions<br/>
 
- <textarea id="$lf" name="$lf" rows="15" cols="100" onchange="frog.text_pane_onchange('$lf')">
+ <textarea id="$lf" name="$lf" rows="$rows" cols="$cols" onchange="frog.text_pane_onchange('$lf')">
  $mfe
  </textarea>
  <br/>
