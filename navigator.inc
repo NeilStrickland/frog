@@ -1,20 +1,14 @@
 <?php
 
 class frog_navigator {
- var $frog;
- var $standard_scripts;
- var $standard_body_scripts;
- var $standard_styles;
- var $available_widgets;
- var $dtd;
- var $scripts_base_dir;
- var $scripts_base_url;
- var $scripts_colocated = 1;
- var $styles_base_dir;
- var $styles_base_url;
- var $styles_colocated = 1;
- var $frog_script_url;
- var $index_url;
+ var $frog, 
+     $standard_scripts, $standard_body_scripts, $scripts_base_dir, $scripts_base_url, $scripts_colocated = 1, 
+     $scripts, $inline_script, $body_scripts, $inline_body_script,
+     $standard_styles, $styles_base_dir, $styles_base_url, $styles_colocated = 1, 
+     $styles, $inline_style,
+     $onload,
+     $widgets, $available_widgets,
+     $frog_script_url, $index_url, $dtd, $default_options;
  
  function __construct($frog) {
   $this->frog = $frog;
@@ -43,6 +37,11 @@ HTML
   width : "700px"
  });
 </script>
+
+HTML
+,
+   'pdfjs' => <<<HTML
+<script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
 
 HTML
   );
