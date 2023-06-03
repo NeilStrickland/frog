@@ -586,7 +586,9 @@ class frog_object {
  }
 
  function descriptor() {
-  if (isset($this->title)) {
+  if (isset($this->title) && $this->title) {
+   return($this->title);
+  } elseif (isset($this->name) && $this->name) {
    return($this->title);
   } elseif ($this->id) {
    return("{$this->object_type}[{$this->id}]");
