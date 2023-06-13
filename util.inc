@@ -44,6 +44,13 @@ function starts_with($prefix,$s) {
 
 //////////////////////////////////////////////////////////////////////
 
+function ends_with($suffix,$s) {
+ $n = strlen($suffix);
+ return(strlen($s) >= $n && substr($s,-$n) == $suffix);
+}
+ 
+//////////////////////////////////////////////////////////////////////
+
 // $start_time and $end_time are like 5:10 or 09:30
 // The return value is like array($s,$e), where usually $s represents
 // the same time as start_time, but in the format 05:10:00, and 
