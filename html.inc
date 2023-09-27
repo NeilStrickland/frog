@@ -540,12 +540,14 @@ HTML
  function session_selector($field_name,$session = null,$opts=null) {
   $y = date('Y');
 
+  $s = $session ? $session : $y;
+
   $defaults = array(
    'onchange' => null,
    'empty_option' => true,
    'width' => '',
-   'min_session' => min($session-1,$y),
-   'max_session' => max($session+1,$y+3)
+   'min_session' => min($s-3,$y),
+   'max_session' => max($s+3,$y+3)
   );
 
   foreach ($defaults as $k => $v) {
@@ -618,13 +620,13 @@ HTML
   $s2 = ($semester == '2') ? ' selected' : '';
 
   if ($allow_resit) {
-   $sr = ($semester == 'resit') ? ' selected' : '';
-   $ro = "\r\n <option $sr>resit</option>";
+   $sr = ($semester == 'Resit') ? ' selected' : '';
+   $ro = "\r\n <option $sr>Resit</option>";
   }
 
   if ($allow_year) {
-   $sy = ($semester == 'year') ? ' selected' : '';
-   $yo = "\r\n <option $sr>year</option>";
+   $sy = ($semester == 'Year') ? ' selected' : '';
+   $yo = "\r\n <option $sy>Year</option>";
   }
 
   return( <<<HTML
