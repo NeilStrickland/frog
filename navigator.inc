@@ -41,7 +41,7 @@ HTML
 HTML
 ,
    'pdfjs' => <<<HTML
-<script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist/build/pdf.js"></script>
 
 HTML
   );
