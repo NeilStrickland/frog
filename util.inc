@@ -624,13 +624,19 @@ function make_index($a,$key) {
 
 //////////////////////////////////////////////////////////////////////
 
-function get_latlong($url) {
+function get_latlng($url) {
  $x = new stdClass();
  $x->lat = null;
  $x->lng = null;
  $x->ok = true;
  $x->error = null;
 
+ if (! trim($url)) {
+  $x->ok = false;
+  $x->error = "Empty URL";
+  return $x;
+ }
+ 
  $ch = curl_init();
  curl_setopt($ch, CURLOPT_URL, $url);
  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
