@@ -628,4 +628,50 @@ function make_index($a,$key) {
  return($b);
 }
 
+//////////////////////////////////////////////////////////////////////
+
+function get_latlng($url) {
+ $x = new stdClass();
+ $x->lat = null;
+ $x->lng = null;
+ $x->ok = true;
+ $x->error = null;
+
+ if (! trim($url)) {
+  $x->ok = false;
+  $x->error = "Empty URL";
+  return $x;
+ }
+ 
+ $ch = curl_init();
+ curl_setopt($ch, CURLOPT_URL, $url);
+ curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+ curl_setopt($ch, CURLOPT_HEADER, true);
+ curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+ curl_setopt($ch, CURLOPT_NOBODY, true);
+ curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+ 
+ $response = curl_exec($ch);
+ if ($response == false) {
+  $x->ok = false;
+  $x->error = curl_error($ch);
+  return $x;
+ }
+
+ $new_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+
+ curl_close($ch);
+
+ if (preg_match('/@(-?[0-9]+\.[0-9]+),(-?[0-9]+\.[0-9]+),/',$new_url,$m)) {
+  $x->lat = $m[1];
+  $x->lng = $m[2];
+  return $x;
+ } else {
+  $x->ok = false;
+  $x->error = "Couldn't find lat/lng in URL";
+  return $x;
+ }
+}
+
 ?>

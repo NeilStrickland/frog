@@ -564,6 +564,7 @@ class frog_object {
  var $base_type;
  var $id;
  var $title;
+ var $name;
 
  function __construct($p,$ot,$id = null,$with_defaults=1) {
   $this->parent = $p;
@@ -589,7 +590,7 @@ class frog_object {
   if (isset($this->title) && $this->title) {
    return($this->title);
   } elseif (isset($this->name) && $this->name) {
-   return($this->title);
+   return($this->name);
   } elseif ($this->id) {
    return("{$this->object_type}[{$this->id}]");
   } else {
