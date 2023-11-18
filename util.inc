@@ -559,12 +559,18 @@ function log_dump($x,$header = 0, $caption = '') {
 
 $cfg = new stdClass();
 
-$cfg->this_url        = 'https://' . $_SERVER['HTTP_HOST'] . 
-                         $_SERVER['SCRIPT_NAME']; 
-$cfg->parent_url      = 'http://' . $_SERVER['HTTP_HOST'] . 
-                         dirname($_SERVER['SCRIPT_NAME']); 
-$cfg->grandparent_url = 'http://' . $_SERVER['HTTP_HOST'] . 
-                         dirname(dirname($_SERVER['SCRIPT_NAME'])); 
+if (isset($_SERVER['HTTP_HOST'])) {
+ $cfg->this_url        = 'https://' . $_SERVER['HTTP_HOST'] . 
+                          $_SERVER['SCRIPT_NAME']; 
+ $cfg->parent_url      = 'http://' . $_SERVER['HTTP_HOST'] . 
+                          dirname($_SERVER['SCRIPT_NAME']); 
+ $cfg->grandparent_url = 'http://' . $_SERVER['HTTP_HOST'] . 
+                          dirname(dirname($_SERVER['SCRIPT_NAME'])); 
+} else {
+ $cfg->this_url        = '';
+ $cfg->parent_url      = '';
+ $cfg->grandparent_url = '';
+}
 
 $cfg->js_url = 'js';
 $cfg->css_url = 'css';
