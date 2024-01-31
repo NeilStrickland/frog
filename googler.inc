@@ -162,6 +162,8 @@ class frog_googler {
    return array('https://mail.google.com/',
          'https://www.googleapis.com/auth/gmail.compose',
          'https://www.googleapis.com/auth/gmail.send');
+  } else if ($key == 'youtube') {
+   return array('https://www.googleapis.com/auth/youtube');
   } else {
    trigger_error('Unknown key');
    exit;
@@ -226,7 +228,7 @@ HTML
   } else {
    $msg = 
         'Unexpected return value from getAccessToken: <br/>' .
-        $token_json;
+        $access_token_json;
   
    if ($nav) {
     $nav->error_page($msg);
