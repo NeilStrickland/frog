@@ -873,15 +873,18 @@ HTML
 
   $defaults = array(
    'instructions'  => '',
+   'use_tab'       => 1,
    'tab_title'     => $f,
    'choices'       => null,
    'choices_label' => 'Standard choices'
   );
 
+  $oo = [];
+
   foreach ($defaults as $k => $v) {
-   $$k = $v;
+   $oo[$k] = $v;
    if ($opts && isset($opts[$k])) {
-    $$k = $opts[$k];
+    $oo[$k] = $opts[$k];
    }
   }
 
@@ -891,21 +894,33 @@ HTML
   // Strip out empty lists to pacify the HTML validator
   $mfh = preg_replace('!<ul></ul>!','<br/>',$mfh);
 
-  $instructions = trim($instructions);
+  $oo['instructions'] = trim($oo['instructions']);
 
-  if ($instructions) {
-   $instructions = '<div class="text">' . $instructions . '</div>';
+  if ($oo['instructions']) {
+   $instructions = '<div class="text">' . $oo['instructions'] . '</div>';
+  }
+
+  if ($oo['use_tab']) {
+  echo <<<HTML
+ <div class="tabbertab">
+
+HTML;
+  }
+
+  if (trim($oo['tab_title'])) {
+  echo <<<HTML
+ <h2>{$oo['tab_title']}</h2>
+
+HTML;
   }
 
   echo <<<HTML
- <div class="tabbertab">
- <h2>$tab_title</h2>
  <p>This may include LaTeX.
   &nbsp; &nbsp; &nbsp;
   <a href="javascript:frog.convert_mathjax('$lf')">Convert to HTML</a>
  </p>
 
- <div class="text">$instructions</div>
+ <div class="text">{$oo['instructions']}</div>
 
  <textarea name="$lf" rows="15" cols="100"
    onblur="frog.convert_mathjax('$lf');">
@@ -915,15 +930,16 @@ HTML
 
 HTML
 ;
-  if ($choices) {
+  if ($oo['choices']) {
    echo <<<HTML
-  &nbsp; &nbsp; &nbsp; $choices_label
+  &nbsp; &nbsp; &nbsp; {$oo['choices_label']}
   <select name="{$lf}_choice" 
    onChange="document.main_form.{$lf}.value=document.main_form.{$lf}_choice.value;frog.convert_mathjax('$lf');"
   >
 
 HTML
-;   foreach ($choices as $c) {
+;
+   foreach ($oo['choices'] as $c) {
     $s = ($c == $mlf) ? " selected=\"selected\"" : '';
     if ($c) {
      $v = '';
@@ -936,7 +952,8 @@ HTML
    <option$v$s>$d</option>
 
 HTML
-;   }
+;   
+}
    echo <<<HTML
   </select>
 
@@ -956,10 +973,17 @@ HTML
  </div>
 
  <br/>
- </div>
 
 HTML
-; }
+; 
+
+  if ($oo['use_tab']) {
+  echo <<<HTML
+ </div>
+
+HTML;
+  }
+ }
 
  //////////////////////////////////////////////////////////////////////
 
