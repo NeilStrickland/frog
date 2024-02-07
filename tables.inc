@@ -565,6 +565,7 @@ class frog_object {
  var $id;
  var $title;
  var $name;
+ var $prefix, $new_object_marker, $new_object_number;
 
  function __construct($p,$ot,$id = null,$with_defaults=1) {
   $this->parent = $p;
@@ -750,7 +751,11 @@ class frog_object {
   return(! $x);
  }
  
- function load_link($n) {
+ function load_link($n, $force = false) {
+  if (isset($this->$n) && $this->$n && ! $force) {
+   return($this->$n);
+  }
+
   $m = $this->parent->load_table($this->object_type);
   
   $nid = $n . '_id';
