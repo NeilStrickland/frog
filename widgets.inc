@@ -192,6 +192,7 @@ function delete_popup($url,$frog)  { return icon_popup('delete' ,$url,$frog); }
 function display_popup($url,$frog) { return icon_popup('display',$url,$frog); }
 function edit_popup($url,$frog)    { return icon_popup('edit'   ,$url,$frog); }
 function pdf_popup($url,$frog)     { return icon_popup('pdf'    ,$url,$frog); }
+function email_popup($addr,$frog)  { return icon_button('email' ,'mailto:' . $addr,$frog); }
 
 function mailto_link($address,$frog) {
  global $cfg;
