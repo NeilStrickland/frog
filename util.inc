@@ -354,6 +354,23 @@ function rmdir_rf($dir) {
 
 //////////////////////////////////////////////////////////////////////
 
+function scandir_recursive($dir) {
+ $files = scandir($dir);
+ $result = [];
+ foreach($files as $f) {
+  if ($f == '.' || $f == '..' || $f == '.git' || $f == 'exam') { continue; }
+  $path = $dir . '/' . $f;
+  if (is_dir($path)) {
+   $result = array_merge($result,scandir_recursive($path));
+  } else {
+   $result[] = $path;
+  }
+ }
+ return $result;
+}
+
+//////////////////////////////////////////////////////////////////////
+
 function error_page($msg,$title = 'Error',$back = null) {
  global $cfg;
  if ($back) {
