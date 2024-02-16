@@ -303,7 +303,7 @@ class frog_object_editor {
   if (isset($a['plural'])) { $plural = $a['plural']; }
   if (isset($a['link'])) { $link = $a['link']; }
   $table = $this->frog->load_table($type);
-  $link_clause = "{$link}={$o->id}";
+  $link_clause = "x.{$link}={$o->id}";
   if (isset($a['filter'])) {
    $link_clause .= ' AND ' . $a['filter'];
   }
