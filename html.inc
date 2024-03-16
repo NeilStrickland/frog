@@ -22,7 +22,40 @@ class frog_html {
    $this->js_name = $frog->name;
   }
  }
- 
+
+ function command_button($s,$action,$width = 0,$opts = null) {
+  $attrib = ' class="command" onclick="' . $action . '"';
+  if ($width) { $attrib .= ' width="' .  $width . '"'; }
+  if ($opts) {
+   foreach($opts as $k => $v) {
+    $attrib .= ' ' . $k . '="' . $v . '"';
+   }
+  }
+  return("<button{$attrib}>$s</button>");
+ }
+
+ function link_button($s,$href,$width = 0,$opts = null) {
+  $attrib = ' class="command" onclick="location=\'' . $href . '\'"';
+  if ($width) { $attrib .= ' width="' .  $width . '"'; }
+  if ($opts) {
+   foreach($opts as $k => $v) {
+    $attrib .= ' ' . $k . '="' . $v . '"';
+   }
+  }
+  return("<button{$attrib}>$s</button>");
+ }
+
+ function popup_button($s,$href,$width = 0,$opts = null) {
+  $attrib = ' class="command" onclick="window.open(\'' . $href . '\')"';
+  if ($width) { $attrib .= ' width="' .  $width . '"'; }
+  if ($opts) {
+   foreach($opts as $k => $v) {
+    $attrib .= ' ' . $k . '="' . $v . '"';
+   }
+  }
+  return("<button{$attrib}>$s</button>");
+ }
+
  function bold($s) { return '<b>' . $s . '</b>'; }
  function fade($s) { return '<span class="fade">' . $s . '</span>'; }
 
