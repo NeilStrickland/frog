@@ -1160,21 +1160,23 @@ HTML
  //////////////////////////////////////////////////////////////////////
 
  function text_input($field_name,$value,$opts = null) {
+  $pm = '';
 
-   $pm = '';
+  if ($opts) {
+	  foreach ($opts as $k => $v) { $pm .= " $k=\"$v\""; }
+  }
 
-   if ($opts) {
-	 foreach ($opts as $k => $v) {
-		 $pm .= " $k=\"$v\"";
-	 }
-   }
-
+  if ($value === null) {
+   $v = '';
+  } else {
    $v = htmlentities($value);
+  }
   return <<<HTML
  <input type="text" name="$field_name" value="$v" {$pm}/>
 
 HTML
-; }
+; 
+ }
 
  //////////////////////////////////////////////////////////////////////
 
