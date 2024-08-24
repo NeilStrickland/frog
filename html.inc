@@ -982,7 +982,7 @@ HTML
    }
   }
 
-  $mf = trim($m->$lf);
+  $mf = trim($m->$lf ?? '');
   $mfe = htmlentities($mf);
 
   // Strip out empty lists to pacify the HTML validator
