@@ -7,7 +7,7 @@ class frog_navigator {
      $standard_styles, $styles_base_dir, $styles_base_url, $styles_colocated = 1, 
      $styles, $inline_style,
      $onload,
-     $widgets, $available_widgets,
+     $widgets, $available_widgets, $selectors,
      $frog_script_url, $index_url, $dtd, $default_options;
  
  function __construct($frog) {
