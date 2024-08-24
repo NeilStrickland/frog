@@ -565,6 +565,9 @@ class frog_object {
  var $id;
  var $title;
  var $name;
+ var $primary_key;
+ var $primary_key_name;
+
 
  function __construct($p,$ot,$id = null,$with_defaults=1) {
   $this->parent = $p;
