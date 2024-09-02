@@ -560,11 +560,12 @@ JS;
 
 class frog_object {
  var $parent, $object_type, $base_type, $id, $title, $name;
-  var $prefix, $new_object_marker, $new_object_number, $primary_key, $primary_key_name;
+  var $prefix, $new_object_marker, $new_object_number, $primary_key, $primary_key_name, $extra;
 
  function __construct($p,$ot,$id = null,$with_defaults=1) {
   $this->parent = $p;
   $this->object_type = $ot;
+  $this->extra = new stdClass();
   $m = $p->load_table($ot);
   $this->base_type = $m->name;
   $pk = $m->primary_key;
