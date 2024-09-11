@@ -1206,7 +1206,7 @@ HTML
    if (isset($opts['onchange'])) { $oc = ' onchange="' . $opts['onchange'] . '"'; }
   }
 
-  $v = htmlentities($value);
+  $v = htmlentities($value ?? '');
   return <<<HTML
  <input type="text" name="$field_name" id="$field_name" value="$v"{$sz}{$oc}/>
  <a id="{$field_name}_check_button"
