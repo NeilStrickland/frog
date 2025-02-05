@@ -670,14 +670,24 @@ class frog_object {
     . $this->parent->get_error(),E_USER_ERROR);
   }
   if ($this->parent->db_type == 'sqlite') {
-   $r = (object) $s->fetchArray(SQLITE3_ASSOC);
+   $r = $s->fetchArray(SQLITE3_ASSOC);
+   if (is_array($r)) {
+    $r = (object) $r;
+   } else {
+    $r = null;
+   }
   } else {
    $r = mysqli_fetch_object($s);
   }
   if ($r) {
    foreach($m->fields as $k => $v) {
     if ($v['type'] == 'integer') {
-     $this->$k = (int) $r->$k;
+     $rk = isset($r->$k) ? ($r->$k) : null;
+     if ($rk === null) {
+      $this->$k = null;
+     } else {
+      $this->$k = (int) $rk;
+     }
     } elseif($v['type'] == 'boolean') {
      $this->$k = $r->$k ? 1 : 0;
     } else {
@@ -768,6 +778,7 @@ class frog_object {
      return(null);
     }
    } else {
+    $this->dump(); 
     trigger_error('Cannot load link: no ' . $nid . ' recorded');
    }
   } else {
