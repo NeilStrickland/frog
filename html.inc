@@ -729,7 +729,7 @@ HTML
   $oc = $oo['onchange'] ? ' onchange="' . $oo['onchange'] . '"' : '';
   $st = $oo['style']    ? ' style="' . $oo['style'] . '"' : '';
   $sz = $oo['size']     ? ' size="' . $oo['size'] . '"' : '';
-  $v = htmlentities($val);
+  $v = htmlentities($val ?? '');
 
   $ii = '';
   if ($id) { $ii = ",$id"; }
@@ -798,7 +798,7 @@ HTML
  function latex_edit_pane($m,$f,$opts = null) {
   $lf = strtolower($f);
   $fh = "{$lf}_html";
-  $x = htmlentities($m->$fh);
+  $x = htmlentities($m->$fh ?? '');
 
   $defaults = array(
    'latex_top'     => '',
@@ -816,8 +816,8 @@ HTML
    }
   }
 
-  $lt = htmlentities($latex_top);
-  $lb = htmlentities($latex_bottom);
+  $lt = htmlentities($latex_top ?? '');
+  $lb = htmlentities($latex_bottom ?? '');
   $mlf = trim($m->$lf);
   $mfh = trim($m->$fh);
 
@@ -900,9 +900,9 @@ HTML
  //////////////////////////////////////////////////////////////////////
 
  function mathjax_edit_pane($m,$f,$opts = null) {
-  $lf = strtolower($f);
+  $lf = strtolower($f ?? '');
   $fh = "{$lf}_html";
-  $x = htmlentities($m->$fh);
+  $x = htmlentities($m->$fh ?? '');
 
   $defaults = array(
    'instructions'  => '',
@@ -1150,7 +1150,7 @@ HTML
  //////////////////////////////////////////////////////////////////////
 
  function hidden_input($field_name,$value) {
-  $v = htmlentities($value);
+  $v = htmlentities($value ?? '');
   return <<<HTML
  <input type="hidden" name="$field_name" value="$v"/>
 
@@ -1169,7 +1169,7 @@ HTML
   if ($value === null) {
    $v = '';
   } else {
-   $v = htmlentities($value);
+   $v = htmlentities($value ?? '');
   }
   return <<<HTML
  <input type="text" name="$field_name" value="$v" {$pm}/>
@@ -1226,7 +1226,7 @@ HTML
    $pm .= " $k = \"$v\"";
    }
 
-  $val = htmlentities($value);
+  $val = htmlentities($value ?? '');
   return <<<HTML
  <textarea name="$field_name" {$pm}>$val</textarea>
 
