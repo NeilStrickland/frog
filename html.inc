@@ -818,13 +818,13 @@ HTML
 
   $lt = htmlentities($latex_top ?? '');
   $lb = htmlentities($latex_bottom ?? '');
-  $mlf = trim($m->$lf);
-  $mfh = trim($m->$fh);
+  $mlf = trim($m->$lf ?? '');
+  $mfh = trim($m->$fh ?? '');
 
   // Strip out empty lists to pacify the HTML validator
   $mfh = preg_replace('!<ul></ul>!','<br/>',$mfh);
 
-  $instructions = trim($instructions);
+  $instructions = trim($instructions ?? '');
 
   if ($instructions) {
    $instructions = '<div class="text">' . $instructions . '</div>';
@@ -921,13 +921,13 @@ HTML
    }
   }
 
-  $mlf = trim($m->$lf);
+  $mlf = trim($m->$lf ?? '');
   $mfh = latex_to_mathjax($mlf);
 
   // Strip out empty lists to pacify the HTML validator
   $mfh = preg_replace('!<ul></ul>!','<br/>',$mfh);
 
-  $oo['instructions'] = trim($oo['instructions']);
+  $oo['instructions'] = trim($oo['instructions'] ?? '');
 
   if ($oo['instructions']) {
    $instructions = '<div class="text">' . $oo['instructions'] . '</div>';
@@ -940,7 +940,7 @@ HTML
 HTML;
   }
 
-  if (trim($oo['tab_title'])) {
+  if (trim($oo['tab_title'] ?? '')) {
   echo <<<HTML
  <h2>{$oo['tab_title']}</h2>
 
@@ -1111,8 +1111,8 @@ HTML
    }
   }
 
-  $mf = trim($m->$lf);
-  $mfe = htmlspecialchars($mf);
+  $mf = trim($m->$lf ?? '');
+  $mfe = htmlspecialchars($mf ?? '');
 
   echo <<<HTML
  <div class="tabbertab">
