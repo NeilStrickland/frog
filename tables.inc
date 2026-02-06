@@ -560,7 +560,8 @@ JS;
 
 class frog_object {
  var $parent, $object_type, $base_type, $id, $title, $name;
-  var $prefix, $new_object_marker, $new_object_number, $primary_key, $primary_key_name, $extra;
+  var $prefix, $new_object_marker, $new_object_number, $primary_key, $primary_key_name, 
+      $extra, $changed;
 
  function __construct($p,$ot,$id = null,$with_defaults=1) {
   $this->parent = $p;
