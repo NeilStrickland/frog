@@ -729,7 +729,7 @@ HTML
   $oc = $oo['onchange'] ? ' onchange="' . $oo['onchange'] . '"' : '';
   $st = $oo['style']    ? ' style="' . $oo['style'] . '"' : '';
   $sz = $oo['size']     ? ' size="' . $oo['size'] . '"' : '';
-  $v = htmlentities($val);
+  $v = htmlentities($val ?? '');
 
   $ii = '';
   if ($id) { $ii = ",$id"; }
@@ -798,7 +798,7 @@ HTML
  function latex_edit_pane($m,$f,$opts = null) {
   $lf = strtolower($f);
   $fh = "{$lf}_html";
-  $x = htmlentities($m->$fh);
+  $x = htmlentities($m->$fh ?? '');
 
   $defaults = array(
    'latex_top'     => '',
@@ -816,15 +816,15 @@ HTML
    }
   }
 
-  $lt = htmlentities($latex_top);
-  $lb = htmlentities($latex_bottom);
-  $mlf = trim($m->$lf);
-  $mfh = trim($m->$fh);
+  $lt = htmlentities($latex_top ?? '');
+  $lb = htmlentities($latex_bottom ?? '');
+  $mlf = trim($m->$lf ?? '');
+  $mfh = trim($m->$fh ?? '');
 
   // Strip out empty lists to pacify the HTML validator
   $mfh = preg_replace('!<ul></ul>!','<br/>',$mfh);
 
-  $instructions = trim($instructions);
+  $instructions = trim($instructions ?? '');
 
   if ($instructions) {
    $instructions = '<div class="text">' . $instructions . '</div>';
@@ -900,9 +900,9 @@ HTML
  //////////////////////////////////////////////////////////////////////
 
  function mathjax_edit_pane($m,$f,$opts = null) {
-  $lf = strtolower($f);
+  $lf = strtolower($f ?? '');
   $fh = "{$lf}_html";
-  $x = htmlentities($m->$fh);
+  $x = htmlentities($m->$fh ?? '');
 
   $defaults = array(
    'instructions'  => '',
@@ -921,13 +921,13 @@ HTML
    }
   }
 
-  $mlf = trim($m->$lf);
+  $mlf = trim($m->$lf ?? '');
   $mfh = latex_to_mathjax($mlf);
 
   // Strip out empty lists to pacify the HTML validator
   $mfh = preg_replace('!<ul></ul>!','<br/>',$mfh);
 
-  $oo['instructions'] = trim($oo['instructions']);
+  $oo['instructions'] = trim($oo['instructions'] ?? '');
 
   if ($oo['instructions']) {
    $instructions = '<div class="text">' . $oo['instructions'] . '</div>';
@@ -940,7 +940,7 @@ HTML
 HTML;
   }
 
-  if (trim($oo['tab_title'])) {
+  if (trim($oo['tab_title'] ?? '')) {
   echo <<<HTML
  <h2>{$oo['tab_title']}</h2>
 
@@ -1111,8 +1111,8 @@ HTML
    }
   }
 
-  $mf = trim($m->$lf);
-  $mfe = htmlspecialchars($mf);
+  $mf = trim($m->$lf ?? '');
+  $mfe = htmlspecialchars($mf ?? '');
 
   echo <<<HTML
  <div class="tabbertab">
@@ -1150,7 +1150,7 @@ HTML
  //////////////////////////////////////////////////////////////////////
 
  function hidden_input($field_name,$value) {
-  $v = htmlentities($value);
+  $v = htmlentities($value ?? '');
   return <<<HTML
  <input type="hidden" name="$field_name" value="$v"/>
 
@@ -1169,7 +1169,7 @@ HTML
   if ($value === null) {
    $v = '';
   } else {
-   $v = htmlentities($value);
+   $v = htmlentities($value ?? '');
   }
   return <<<HTML
  <input type="text" name="$field_name" value="$v" {$pm}/>
@@ -1226,7 +1226,7 @@ HTML
    $pm .= " $k = \"$v\"";
    }
 
-  $val = htmlentities($value);
+  $val = htmlentities($value ?? '');
   return <<<HTML
  <textarea name="$field_name" {$pm}>$val</textarea>
 
