@@ -6,6 +6,7 @@ class frog {
  var $registry;
  var $subtype_registry;
  var $include_dir;
+ var $data_dir;
  var $config;
  var $cache;
  var $db_name = '';
@@ -52,6 +53,68 @@ class frog {
     return $this->db->real_escape_string($s);
   }
  } 
+
+ function export_schema_text() {
+  if ($this->db_type != 'sqlite') {
+   $schema_text = 'Schema export is only implemented for sqlite.' . PHP_EOL;
+   $schema_file = $this->data_dir . '/schema.txt';
+   file_put_contents($schema_file, $schema_text);
+   return $schema_file;
+  }
+
+  $lines = array();
+  $tables = $this->get_all("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name");
+  foreach ($tables as $t) {
+   $table_name = $t->name;
+   $lines[] = "TABLE {$table_name}";
+
+   $cols = $this->get_all("PRAGMA table_info('" . $this->escape_string($table_name) . "')");
+   foreach ($cols as $c) {
+    $flags = array();
+    if ($c->pk) { $flags[] = 'PK'; }
+    if ($c->notnull) { $flags[] = 'NOT NULL'; }
+    if ($c->dflt_value !== null && $c->dflt_value !== '') {
+     $flags[] = 'DEFAULT ' . $c->dflt_value;
+    }
+    $flag_text = $flags ? ' [' . implode(', ', $flags) . ']' : '';
+    $lines[] = "  - {$c->name} {$c->type}{$flag_text}";
+   }
+
+   $fks = $this->get_all("PRAGMA foreign_key_list('" . $this->escape_string($table_name) . "')");
+   if ($fks && count($fks) > 0) {
+    $lines[] = '  FOREIGN KEYS';
+    foreach ($fks as $fk) {
+     $lines[] = "    - {$fk->from} -> {$fk->table}.{$fk->to} (on update {$fk->on_update}, on delete {$fk->on_delete})";
+    }
+   }
+
+   $indexes = $this->get_all("PRAGMA index_list('" . $this->escape_string($table_name) . "')");
+   if ($indexes && count($indexes) > 0) {
+    $lines[] = '  INDEXES';
+    foreach ($indexes as $ix) {
+     $index_name = $ix->name;
+     $index_cols = $this->get_all("PRAGMA index_info('" . $this->escape_string($index_name) . "')");
+     $col_names = array();
+     foreach ($index_cols as $ic) {
+      $col_names[] = $ic->name;
+     }
+     $unique = $ix->unique ? ' UNIQUE' : '';
+     $lines[] = "    - {$index_name}{$unique} (" . implode(', ', $col_names) . ')';
+    }
+   }
+
+   $lines[] = '';
+  }
+
+  if (count($lines) == 0) {
+   $lines[] = 'No tables found';
+  }
+
+  $schema_text = rtrim(implode(PHP_EOL, $lines)) . PHP_EOL;
+  $schema_file = $this->data_dir . '/schema.txt';
+  file_put_contents($schema_file, $schema_text);
+  return $schema_file;
+ }
 
  function load_config() {
   $xx = $this->get_all('SELECT * FROM tbl_config');
