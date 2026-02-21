@@ -691,4 +691,13 @@ function get_latlng($url) {
  }
 }
 
+//////////////////////////////////////////////////////////////////////
+
+function linked_text($t, $u) {
+ if (! $t) { return ''; }
+ if (! $u) { return htmlspecialchars($t); }
+ return '<a href="' . htmlspecialchars($u) . '" target="_blank">' .
+  htmlspecialchars($t) . '</a>';
+}
+
 ?>
