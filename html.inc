@@ -23,6 +23,10 @@ class frog_html {
   }
  }
 
+ function h1($s) { return '<h1>' . $s . '</h1>'; }
+ function h2($s) { return '<h2>' . $s . '</h2>'; }
+ function h3($s) { return '<h3>' . $s . '</h3>'; }
+
  function command_button($s,$action,$width = 0,$opts = null) {
   $attrib = ' class="command" onclick="' . $action . '"';
   if ($width) { $attrib .= ' width="' .  $width . '"'; }
@@ -842,9 +846,7 @@ HTML
 
  <input type="hidden" name="{$lf}_latex_top" value="$lt"/>
  <textarea name="$lf" rows="15" cols="100"
-   onblur="frog.convert_latex('$lf');">
- $mlf
- </textarea>
+   onblur="frog.convert_latex('$lf');">$mlf</textarea>
  <br/>
 
 HTML
@@ -1173,6 +1175,27 @@ HTML
   }
   return <<<HTML
  <input type="text" name="$field_name" value="$v" {$pm}/>
+
+HTML
+; 
+ }
+
+ //////////////////////////////////////////////////////////////////////
+
+ function date_input($field_name,$value,$opts = null) {
+  $pm = '';
+
+  if ($opts) {
+	  foreach ($opts as $k => $v) { $pm .= " $k=\"$v\""; }
+  }
+
+  if ($value === null) {
+   $v = '';
+  } else {
+   $v = htmlentities($value ?? '');
+  }
+  return <<<HTML
+ <input type="date" name="$field_name" value="$v" {$pm}/>
 
 HTML
 ; 
