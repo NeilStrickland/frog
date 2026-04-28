@@ -525,6 +525,14 @@ function dmyy($date) {
   substr($date,0,4);
 }
 
+function Djny($date) {
+ if ($date) {
+  return date('D j/n/y',strtotime($date));
+ } else {
+  return '';
+ }
+}
+
 //////////////////////////////////////////////////////////////////////
 
 function trim_time($t) {
