@@ -1052,9 +1052,7 @@ HTML;
 
  $instructions<br/>
 
- <textarea id="$lf" name="$lf" rows="$rows" cols="$cols" onchange="frog.text_pane_onchange('$lf')">
- $mfe
- </textarea>
+ <textarea id="$lf" name="$lf" rows="$rows" cols="$cols" onchange="frog.text_pane_onchange('$lf')">$mfe</textarea>
  <br/>
 
 HTML
